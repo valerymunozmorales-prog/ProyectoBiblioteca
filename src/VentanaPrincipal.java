@@ -4,7 +4,6 @@ import java.awt.*;
 import java.util.ArrayList;
 
 public class VentanaPrincipal extends JFrame {
-
     private Biblioteca biblioteca;
 
     private JTextField txtTitulo;
@@ -12,11 +11,10 @@ public class VentanaPrincipal extends JFrame {
     private JTextField txtISBN;
     private JTextField txtGenero;
     private JTextField txtAnio;
+    private JTextField txtCopias;
 
     private JTextField txtBuscarAutor;
-
     private JTable tablaLibros;
-
     private JButton btnAgregar;
     private JButton btnEliminar;
 
@@ -30,23 +28,24 @@ public class VentanaPrincipal extends JFrame {
 
     private void crearVentana() {
 
-        setTitle("Biblioteca");
-        setSize(900, 500);
+        setTitle("isstema de Gestion de Biblioteca");
+        setSize(950, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
 
+        JPanel formulario = new JPanel(new GridLayout(3, 4, 8, 8));
 
-        txtTitulo = new JTextField(10);
-        txtAutor = new JTextField(10);
-        txtISBN = new JTextField(10);
-        txtGenero = new JTextField(10);
-        txtAnio = new JTextField(10);
+        txtTitulo = new JTextField();
+        txtAutor = new JTextField();
+        txtISBN = new JTextField();
+        txtGenero = new JTextField();
+        txtAnio = new JTextField();
+        txtCopias = new JTextField();
 
-        btnAgregar = new JButton("Agregar");
-        btnEliminar = new JButton("Eliminar");
+        JButton btnAgregar = new JButton("Agregar libro");
 
 
-        JPanel formulario = new JPanel();
+        formulario.setBorder(BorderFactory.createTitledBorder("Registrar nuevo libro"));
 
         formulario.add(new JLabel("Título:"));
         formulario.add(txtTitulo);
@@ -63,17 +62,23 @@ public class VentanaPrincipal extends JFrame {
         formulario.add(new JLabel("Año:"));
         formulario.add(txtAnio);
 
-        formulario.add(btnAgregar);
+        formulario.add(new JLabel("Copias"));
+        formulario.add(txtCopias);
 
 
-        JPanel busqueda = new JPanel();
+        JPanel panelAgregar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
 
-        busqueda.add(new JLabel("Buscar autor:"));
 
-        txtBuscarAutor = new JTextField(20);
+        JPanel panelSuperior = new JPanel();
 
-        busqueda.add(txtBuscarAutor);
+        panelSuperior.add(panelAgregar, BorderLayout.SOUTH);
 
+        add(panelSuperior, BorderLayout.NORTH);
+
+
+        JPanel panelBtnAgregar = new JPanel();
+        btnAgregar = new JButton("Agregar libro");
+        panelBtnAgregar.add(btnAgregar);
 
         tablaLibros = new JTable();
 
@@ -83,20 +88,32 @@ public class VentanaPrincipal extends JFrame {
                         "Autor",
                         "ISBN",
                         "Género",
-                        "Año"
+                        "Año",
+                        "Copias Disponbles"
                 }, 0);
+
 
         tablaLibros.setModel(modelo);
 
         JPanel panelEliminar = new JPanel();
 
+        txtBuscarAutor = new JTextField(20);
+
+        JButton btnBuscar = new JButton("Buscar por autor");
+        JButton btnMostrarTodos = new JButton("Mostrar todos");
+        btnEliminar = new JButton("Eliminar Libro");
+
+        panelEliminar.add(new JLabel("Autor"));
+        panelEliminar.add(txtBuscarAutor);
+        panelEliminar.add(btnBuscar);
+        panelEliminar.add(btnMostrarTodos);
         panelEliminar.add(btnEliminar);
+
+
         JPanel superior = new JPanel(new BorderLayout());
 
+        superior.add(panelBtnAgregar, BorderLayout.CENTER);
         superior.add(formulario, BorderLayout.NORTH);
-
-        superior.add(busqueda, BorderLayout.SOUTH);
-
 
         add(superior, BorderLayout.NORTH);
 
@@ -104,8 +121,9 @@ public class VentanaPrincipal extends JFrame {
 
         add(panelEliminar, BorderLayout.SOUTH);
         btnAgregar.addActionListener(e -> agregarLibro());
+        btnMostrarTodos.addActionListener(e -> actualizarTabla());
         btnEliminar.addActionListener(e -> eliminarLibro());
-        txtBuscarAutor.addActionListener(
+        btnBuscar.addActionListener(
                 e -> filtrarPorAutor()
         );
     }
@@ -116,13 +134,15 @@ public class VentanaPrincipal extends JFrame {
         String isbn = txtISBN.getText();
         String genero = txtGenero.getText();
         String anioTexto = txtAnio.getText();
+        String copiasTexto = txtCopias.getText();
 
 
         if (titulo.isEmpty() ||
                 autor.isEmpty() ||
                 isbn.isEmpty() ||
                 genero.isEmpty() ||
-                anioTexto.isEmpty()) {
+                anioTexto.isEmpty() ||
+                copiasTexto.isEmpty()) {
 
             JOptionPane.showMessageDialog(this, "Todos los campos son obligatorios");
 
@@ -142,7 +162,25 @@ public class VentanaPrincipal extends JFrame {
 
             return;
         }
-        Libro libro = new Libro(titulo, autor, isbn, genero, anio);
+
+        int copias;
+
+        try{
+            copias = Integer.parseInt(copiasTexto);
+
+        }catch(NumberFormatException e){
+
+            JOptionPane.showMessageDialog(this, "Las copias deben ser un numero");
+            return;
+        }
+
+        if (copias <= 0) {
+            JOptionPane.showMessageDialog(this, "Debe existir al menos una copia");
+            return;
+        }
+
+
+        Libro libro = new Libro(titulo, autor, isbn, genero, anio, copias);
 
         boolean agregado =
                 biblioteca.agregarLibro(libro);
@@ -151,6 +189,8 @@ public class VentanaPrincipal extends JFrame {
             JOptionPane.showMessageDialog(this, "Ese ISBN ya existe");
 
             return;
+        }else{
+            JOptionPane.showMessageDialog(this, "Libro agregado correctamente", "Exito", JOptionPane.INFORMATION_MESSAGE);
         }
 
         actualizarTabla();
@@ -171,7 +211,8 @@ public class VentanaPrincipal extends JFrame {
                     libro.getAutor(),
                     libro.getIsbn(),
                     libro.getGenero(),
-                    libro.getAnio()
+                    libro.getAnio(),
+                    libro.getCopiasDisponibles()
 
             });
         }
@@ -217,7 +258,8 @@ public class VentanaPrincipal extends JFrame {
                     libro.getAutor(),
                     libro.getIsbn(),
                     libro.getGenero(),
-                    libro.getAnio()
+                    libro.getAnio(),
+                    libro.getCopiasDisponibles()
 
             });
         }
@@ -230,5 +272,6 @@ public class VentanaPrincipal extends JFrame {
         txtISBN.setText("");
         txtGenero.setText("");
         txtAnio.setText("");
+        txtCopias.setText("");
     }
 }

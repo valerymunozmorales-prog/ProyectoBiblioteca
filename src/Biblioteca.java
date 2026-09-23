@@ -6,9 +6,7 @@ public class Biblioteca {
     private HashMap<String, Libro> librosPorISBN;
     private HashMap<String, ArrayList<Libro>> librosPorAutor;
 
-
     public Biblioteca() {
-
         librosPorISBN = new HashMap<>();
         librosPorAutor = new HashMap<>();
     }
@@ -19,45 +17,33 @@ public class Biblioteca {
             return false;
         }
         librosPorISBN.put(
-                libro.getIsbn(),
-                libro
-        );
+                libro.getIsbn(), // esta es la clave
+                libro);// este es el valor;
 
         String autor = libro.getAutor();
 
         if (!librosPorAutor.containsKey(autor)) {
-
-            librosPorAutor.put(
-                    autor,
+            librosPorAutor.put(autor,
                     new ArrayList<>()
             );
         }
-
         librosPorAutor.get(autor).add(libro);
-
         return true;
     }
 
     public Libro buscarPorISBN(String isbn) {
-
         return librosPorISBN.get(isbn);
     }
 
     public ArrayList<Libro> buscarPorAutor(String autor) {
-
         return librosPorAutor.getOrDefault(
                 autor,
-                new ArrayList<>()
-        );
+                new ArrayList<>());
     }
-
     public ArrayList<Libro> obtenerTodos() {
-
         return new ArrayList<>(
-                librosPorISBN.values()
-        );
+                librosPorISBN.values());
     }
-
     public boolean eliminarPorISBN(String isbn) {
 
         Libro libro = librosPorISBN.get(isbn);

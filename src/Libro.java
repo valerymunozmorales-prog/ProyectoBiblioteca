@@ -5,13 +5,15 @@ public class Libro {
         private String isbn;
         private String genero;
         private int anio;
+        private  int copiasDisponibles;
 
-        public Libro(String titulo, String autor, String isbn, String genero, int anio) {
+        public Libro(String titulo, String autor, String isbn, String genero, int anio, int copiasDisponibles) {
             this.titulo = titulo;
             this.autor = autor;
             this.isbn = isbn;
             this.genero = genero;
             this.anio = anio;
+            this.copiasDisponibles = copiasDisponibles;
         }
 
         public String getTitulo() {
@@ -32,6 +34,9 @@ public class Libro {
 
         public int getAnio() {
             return anio;
+        }
+        public int getCopiasDisponibles(){
+            return copiasDisponibles;
         }
     }
 
