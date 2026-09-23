@@ -42,8 +42,6 @@ public class VentanaPrincipal extends JFrame {
         txtAnio = new JTextField();
         txtCopias = new JTextField();
 
-        JButton btnAgregar = new JButton("Agregar libro");
-
 
         formulario.setBorder(BorderFactory.createTitledBorder("Registrar nuevo libro"));
 
