@@ -229,8 +229,19 @@ public class VentanaPrincipal extends JFrame {
 
         String isbn = tablaLibros.getValueAt(fila, 2).toString();
 
-        biblioteca.eliminarPorISBN(isbn);
-        actualizarTabla();
+        int confirmarEliminacion = JOptionPane.showConfirmDialog(
+                this, "¿Estas seguro de eliminar el libro?",
+                "Confirmar eliminación",
+                JOptionPane.YES_NO_OPTION
+        );
+
+        if (confirmarEliminacion == JOptionPane.YES_OPTION){
+            biblioteca.eliminarPorISBN(isbn);
+            actualizarTabla();
+
+            JOptionPane.showMessageDialog(this, "El libro se elimino correctamente.", "Exito", JOptionPane.INFORMATION_MESSAGE);
+        }
+
     }
 
     private void filtrarPorAutor() {
