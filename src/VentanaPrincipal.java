@@ -87,6 +87,7 @@ public class VentanaPrincipal extends JFrame {
                 }, 0);
 
         tablaLibros.setModel(modelo);
+
         JPanel panelEliminar = new JPanel();
 
         panelEliminar.add(btnEliminar);
@@ -103,9 +104,11 @@ public class VentanaPrincipal extends JFrame {
 
         add(panelEliminar, BorderLayout.SOUTH);
         btnAgregar.addActionListener(e -> agregarLibro());
-        
+        btnEliminar.addActionListener(e -> eliminarLibro());
+        txtBuscarAutor.addActionListener(
+                e -> filtrarPorAutor()
+        );
     }
-
     private void agregarLibro() {
 
         String titulo = txtTitulo.getText();
@@ -151,8 +154,8 @@ public class VentanaPrincipal extends JFrame {
         }
 
         actualizarTabla();
+        limpiarCampos();
     }
-
     private void actualizarTabla() {
 
         DefaultTableModel modelo =
@@ -172,5 +175,60 @@ public class VentanaPrincipal extends JFrame {
 
             });
         }
+    }
+    private void eliminarLibro() {
+
+        int fila = tablaLibros.getSelectedRow();
+
+        if (fila == -1) {
+            JOptionPane.showMessageDialog(this, "Selecciona un libro");
+
+            return;
+        }
+
+        String isbn = tablaLibros.getValueAt(fila, 2).toString();
+
+        biblioteca.eliminarPorISBN(isbn);
+        actualizarTabla();
+    }
+
+    private void filtrarPorAutor() {
+
+        String autor = txtBuscarAutor.getText().trim();
+
+        DefaultTableModel modelo = (DefaultTableModel) tablaLibros.getModel();
+
+        modelo.setRowCount(0);
+
+        if (autor.isEmpty()) {
+            actualizarTabla();
+
+            return;
+        }
+
+
+        ArrayList<Libro> resultados = biblioteca.buscarPorAutor(autor);
+
+        for (Libro libro : resultados) {
+
+            modelo.addRow(new Object[]{
+
+                    libro.getTitulo(),
+                    libro.getAutor(),
+                    libro.getIsbn(),
+                    libro.getGenero(),
+                    libro.getAnio()
+
+            });
+        }
+    }
+
+    private void limpiarCampos() {
+
+        txtTitulo.setText("");
+        txtAutor.setText("");
+        txtISBN.setText("");
+        txtGenero.setText("");
+        txtAnio.setText("");
     }
 }
