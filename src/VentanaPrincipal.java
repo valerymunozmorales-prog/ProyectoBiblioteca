@@ -22,13 +22,12 @@ public class VentanaPrincipal extends JFrame {
     public VentanaPrincipal() {
 
         biblioteca = new Biblioteca();
-
         crearVentana();
     }
 
     private void crearVentana() {
 
-        setTitle("isstema de Gestion de Biblioteca");
+        setTitle("Sistema de Gestion de Biblioteca");
         setSize(950, 600);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -64,17 +63,8 @@ public class VentanaPrincipal extends JFrame {
         formulario.add(txtCopias);
 
 
-        JPanel panelAgregar = new JPanel(new FlowLayout(FlowLayout.RIGHT));
-
-
-        JPanel panelSuperior = new JPanel();
-
-        panelSuperior.add(panelAgregar, BorderLayout.SOUTH);
-
-        add(panelSuperior, BorderLayout.NORTH);
-
-
         JPanel panelBtnAgregar = new JPanel();
+
         btnAgregar = new JButton("Agregar libro");
         panelBtnAgregar.add(btnAgregar);
 
@@ -118,13 +108,14 @@ public class VentanaPrincipal extends JFrame {
         add(new JScrollPane(tablaLibros), BorderLayout.CENTER);
 
         add(panelEliminar, BorderLayout.SOUTH);
+
+
         btnAgregar.addActionListener(e -> agregarLibro());
         btnMostrarTodos.addActionListener(e -> actualizarTabla());
         btnEliminar.addActionListener(e -> eliminarLibro());
-        btnBuscar.addActionListener(
-                e -> filtrarPorAutor()
-        );
+        btnBuscar.addActionListener(e -> filtrarPorAutor());
     }
+
     private void agregarLibro() {
 
         String titulo = txtTitulo.getText();
@@ -155,8 +146,7 @@ public class VentanaPrincipal extends JFrame {
 
         } catch (NumberFormatException e) {
 
-            JOptionPane.showMessageDialog(this, "El año debe ser un número"
-            );
+            JOptionPane.showMessageDialog(this, "El año debe ser un número");
 
             return;
         }
@@ -177,11 +167,9 @@ public class VentanaPrincipal extends JFrame {
             return;
         }
 
-
         Libro libro = new Libro(titulo, autor, isbn, genero, anio, copias);
 
-        boolean agregado =
-                biblioteca.agregarLibro(libro);
+        boolean agregado = biblioteca.agregarLibro(libro);
 
         if (!agregado) {
             JOptionPane.showMessageDialog(this, "Ese ISBN ya existe");
@@ -196,11 +184,9 @@ public class VentanaPrincipal extends JFrame {
     }
     private void actualizarTabla() {
 
-        DefaultTableModel modelo =
-                (DefaultTableModel) tablaLibros.getModel();
+        DefaultTableModel modelo = (DefaultTableModel) tablaLibros.getModel();
 
         modelo.setRowCount(0);
-
 
         for (Libro libro : biblioteca.obtenerTodos()) {
             modelo.addRow(new Object[]{
